@@ -6,22 +6,39 @@ function createCanvas(width, height) {
     return canvas.getContext("2d")
 }
 
-function square(canvas) {
+function createGridCells() {
+    const _gridCells = []
 
-    const square = {
-        x: 100,
-        y: 100,
-        size: 10,
-        color: 'blue'
-    };
+    for (let i = 0; i < cols; i ++) {
+        for (let j = 0; j < rows; j++) {
+            _gridCells.push({
+                x: i * squareSize,
+                y: j * squareSize,
+                color: 'white'
+            })
+        }
+    }
 
-    canvas.fillStyle = square.color
-    canvas.strokeRect(square.x, square.y, square.size, square.size)
-
+    return _gridCells
 }
+
+function drawGrid() {
+    for (const square of gridCells) {
+        ctx.fillStyle = square.color
+        ctx.strokeStyle = "black"
+        ctx.fillRect(square.x, square.y, squareSize, squareSize)
+        ctx.strokeRect(square.x, square.y, squareSize, squareSize)
+    }
+}
+
+function toggleColor(clickedSquare) {
+    clickedSquare.color = clickedSquare.color === "white" ? "black" : "white"
+}
+
 
 function make2DArray(cols, rows) {
     let arr = new Array(cols)
+
     for (let i = 0; i < arr.length; i++) {
         arr[i] = (new Array(rows)).fill(0)
     }
@@ -29,16 +46,41 @@ function make2DArray(cols, rows) {
     return arr
 }
 
+const width = 400
+const height = 600
 
-function setup() {
-    let grid
-    const width = 400
-    const height = 600
+const squareSize = 20
 
-    const canvas = createCanvas(width, height)
+const cols = width / squareSize
+const rows = height / squareSize
 
-    square(canvas)
+const gridCells = createGridCells()
+const ctx = createCanvas(width, height)
 
-}
+const arrPos = make2DArray(cols, rows)
 
-setup()
+ctx.canvas.addEventListener('click', (event) => {
+    const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
+
+    const clikedSquare = gridCells.find(
+        (square) =>
+            mouseX >= square.x &&
+            mouseX <= square.x + squareSize &&
+            mouseY >= square.y &&
+            mouseY <= square.y + squareSize
+    )
+
+    if (clikedSquare) {
+        toggleColor(clikedSquare)
+
+        let arrPosI = (mouseX - (mouseX % squareSize)) / squareSize
+        let arrPosJ = (mouseY - (mouseY % squareSize)) / squareSize
+
+        arrPos[arrPosI][arrPosJ] = 1
+    }
+
+    drawGrid()
+})
+
+drawGrid()
