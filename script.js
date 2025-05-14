@@ -7,15 +7,11 @@ function createCanvas(width, height) {
 }
 
 function createGridCells() {
-    const _gridCells = []
+    const _gridCells = new Map()
 
     for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-            _gridCells.push({
-                x: i * squareSize,
-                y: j * squareSize,
-                status: 0
-            })
+            _gridCells.set([i, j], 0)
         }
     }
 
@@ -24,16 +20,16 @@ function createGridCells() {
 
 function drawGrid() {
 
-    for (const square of gridCells) {
-        ctx.fillStyle = square.status == 0 ? "white" : "black"
+    for (const [key, value] of gridCells) {
+        ctx.fillStyle = value == 0 ? "white" : "black"
         ctx.strokeStyle = "black"
-        ctx.fillRect(square.x, square.y, squareSize, squareSize)
-        ctx.strokeRect(square.x, square.y, squareSize, squareSize)
+        ctx.fillRect(key[0] * squareSize, key[1] * squareSize, squareSize, squareSize)
+        ctx.strokeRect(key[0] * squareSize, key[1] * squareSize, squareSize, squareSize)
     }
 }
 
-function toggleColor(clickedSquare) {
-    clickedSquare.status = 1
+function toggleColor([posI, posJ]) {
+    gridCells.set([posI, posJ], 1)
 }
 
 function make2DArray(cols, rows) {
@@ -65,32 +61,24 @@ ctx.canvas.addEventListener('click', (event) => {
     const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
 
-    const clikedSquare = gridCells.find(
-        (square) =>
-            mouseX >= square.x &&
-            mouseX <= square.x + squareSize &&
-            mouseY >= square.y &&
-            mouseY <= square.y + squareSize
-    )
+    const posI = (mouseY - (mouseY % squareSize)) / squareSize
+    const posJ = (mouseX - (mouseX % squareSize)) / squareSize
 
-    toggleColor(clikedSquare)
+    toggleColor([posI, posJ])
 
-    const arrPosI = (mouseY - (mouseY % squareSize)) / squareSize
-    const arrPosJ = (mouseX - (mouseX % squareSize)) / squareSize
+    // arrPos[posI][posJ] = 1
 
-    arrPos[arrPosI][arrPosJ] = 1
+    // const arrPosPrev = [...arrPos]
 
-    const arrPosPrev = [...arrPos]
+    // for (let i = 0; i < cols; i++) {
+    //     for (let j = 0; j < rows; j++) {
+    //         if (arrPosPrev[i][j] && (i + 1 < cols)) {
+    //             arrPos[i][j] = 0
+    //             arrPos[i + 1][j] = 1
 
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-            if (arrPosPrev[i][j] && (i+1 < cols)) {
-                arrPos[i][j] = 0
-                arrPos[i + 1][j] = 1
-                
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 
     setTimeout(drawGrid, 100);
 
