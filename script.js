@@ -36,12 +36,11 @@ function toggleColor(clickedSquare) {
     clickedSquare.status = 1
 }
 
-
 function make2DArray(cols, rows) {
-    let arr = new Array(cols)
+    let arr = new Array(rows)
 
     for (let i = 0; i < arr.length; i++) {
-        arr[i] = (new Array(rows)).fill(0)
+        arr[i] = (new Array(cols)).fill(0)
     }
 
     return arr
@@ -74,24 +73,20 @@ ctx.canvas.addEventListener('click', (event) => {
             mouseY <= square.y + squareSize
     )
 
-    if (!clikedSquare) {
-        return
-    }
-
     toggleColor(clikedSquare)
 
-    const arrPosI = (mouseX - (mouseX % squareSize)) / squareSize
-    const arrPosJ = (mouseY - (mouseY % squareSize)) / squareSize
+    const arrPosI = (mouseY - (mouseY % squareSize)) / squareSize
+    const arrPosJ = (mouseX - (mouseX % squareSize)) / squareSize
 
     arrPos[arrPosI][arrPosJ] = 1
 
-    const arrPosAux = [...arrPos] 
+    const arrPosPrev = [...arrPos]
 
     for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-            if (arrPosAux[i][j] && (j+1 < rows)) {
+            if (arrPosPrev[i][j] && (i+1 < cols)) {
                 arrPos[i][j] = 0
-                arrPos[i][j + 1] = 1
+                arrPos[i + 1][j] = 1
                 
             }
         }
