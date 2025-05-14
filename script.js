@@ -28,7 +28,7 @@ function drawGrid() {
     }
 }
 
-function toggleColor([posI, posJ]) {
+function addSand([posI, posJ]) {
     gridCells.set([posI, posJ], 1)
 }
 
@@ -64,22 +64,8 @@ ctx.canvas.addEventListener('click', (event) => {
     const posI = (mouseX - (mouseX % squareSize)) / squareSize
     const posJ = (mouseY - (mouseY % squareSize)) / squareSize
 
-    toggleColor([posI, posJ])
+    addSand([posI, posJ])
 
-    // arrPos[posI][posJ] = 1
-
-    // const arrPosPrev = [...arrPos]
-
-    // for (let i = 0; i < cols; i++) {
-    //     for (let j = 0; j < rows; j++) {
-    //         if (arrPosPrev[i][j] && (i + 1 < cols)) {
-    //             arrPos[i][j] = 0
-    //             arrPos[i + 1][j] = 1
-
-    //         }
-    //     }
-    // }
-
-    setTimeout(drawGrid, 100);
+    drawGrid()
 
 })
