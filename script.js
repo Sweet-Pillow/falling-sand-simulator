@@ -61,8 +61,8 @@ ctx.canvas.addEventListener('click', (event) => {
     const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
 
-    const posI = (mouseY - (mouseY % squareSize)) / squareSize
-    const posJ = (mouseX - (mouseX % squareSize)) / squareSize
+    const posI = (mouseX - (mouseX % squareSize)) / squareSize
+    const posJ = (mouseY - (mouseY % squareSize)) / squareSize
 
     toggleColor([posI, posJ])
 
