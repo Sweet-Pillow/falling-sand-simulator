@@ -6,12 +6,20 @@ function createCanvas(width, height) {
     return canvas.getContext("2d")
 }
 
+function hashKey(key) {
+    if (Array.isArray(key)) {
+        return JSON.stringify(key)
+    }
+
+    return JSON.parse(key)
+}
+
 function createGridCells() {
     const _gridCells = new Map()
 
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-            _gridCells.set([i, j], 0)
+            _gridCells.set(hashKey([i, j]), 0)
         }
     }
 
@@ -21,15 +29,16 @@ function createGridCells() {
 function drawGrid() {
 
     for (const [key, value] of gridCells) {
+        const k = hashKey(key)
         ctx.fillStyle = value == 0 ? "white" : "black"
         ctx.strokeStyle = "black"
-        ctx.fillRect(key[1] * squareSize, key[0] * squareSize, squareSize, squareSize)
-        ctx.strokeRect(key[1] * squareSize, key[0] * squareSize, squareSize, squareSize)
+        ctx.fillRect(k[1] * squareSize, k[0] * squareSize, squareSize, squareSize)
+        ctx.strokeRect(k[1] * squareSize, k[0] * squareSize, squareSize, squareSize)
     }
 }
 
 function addSand([posI, posJ]) {
-    gridCells.set([posI, posJ], 1)
+    gridCells.set(hashKey([posI, posJ]), 1)
 }
 
 function loop() {
@@ -47,15 +56,17 @@ function sandFall() {
     if (!sandGrains) return
 
     sandGrains.forEach(elem => {
-        const x = elem[0][0]
-        const y = elem[0][1]
+        const currentKeys = hashKey(elem[0])
+
+        const x = currentKeys[0]
+        const y = currentKeys[1]
 
         if (x + 2 > rows) return
 
         if (gridCells.get([x + 1, y]) == 1) return
 
-        gridCells.set([x, y], 0)
-        gridCells.set([x + 1, y], 1)
+        gridCells.set(hashKey([x, y]), 0)
+        gridCells.set(hashKey([x + 1, y]), 1)
 
     });
 
@@ -63,9 +74,9 @@ function sandFall() {
 
 const width = 400
 const height = 600
-const delay = 2000
+const delay = 1000
 
-const squareSize = 20
+const squareSize = 200
 
 const cols = width / squareSize
 const rows = height / squareSize
@@ -88,6 +99,5 @@ ctx.canvas.addEventListener('click', (event) => {
     drawGrid()
 
 })
-
 
 loop()
