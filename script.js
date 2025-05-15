@@ -23,7 +23,7 @@ function drawGrid() {
     for (const [key, value] of gridCells) {
         ctx.fillStyle = value == 0 ? "white" : "black"
         ctx.strokeStyle = "black"
-        ctx.fillRect(key[0] * squareSize, key[1] * squareSize, squareSize, squareSize)
+        ctx.fillRect(key[1] * squareSize, key[0] * squareSize, squareSize, squareSize)
         ctx.strokeRect(key[1] * squareSize, key[0] * squareSize, squareSize, squareSize)
     }
 }
@@ -33,10 +33,12 @@ function addSand([posI, posJ]) {
 }
 
 function loop() {
-    sandFall()
-    drawGrid()
-    // setInterval(() => {
-    // }, delay)
+    setInterval(() => {
+        sandFall()
+        drawGrid()
+
+    }, delay)
+
 }
 
 function sandFall() {
@@ -45,11 +47,13 @@ function sandFall() {
     if (!sandGrains) return
 
     sandGrains.forEach(elem => {
-        const x = elem[0][1]
-        const y = elem[0][0]
+        const x = elem[0][0]
+        const y = elem[0][1]
 
-        // gridCells.set([x, y], 0)
-        // gridCells.set([x + 1, y], 1)
+        if (x + 2 > rows) return
+
+        gridCells.set([x, y], 0)
+        gridCells.set([x + 1, y], 1)
 
     });
 
@@ -57,7 +61,7 @@ function sandFall() {
 
 const width = 400
 const height = 600
-const delay = 2000
+const delay = 600
 
 const squareSize = 200
 
@@ -74,12 +78,14 @@ ctx.canvas.addEventListener('click', (event) => {
     const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
 
-    const posI = (mouseX - (mouseX % squareSize)) / squareSize
-    const posJ = (mouseY - (mouseY % squareSize)) / squareSize
+    const posI = (mouseY - (mouseY % squareSize)) / squareSize
+    const posJ = (mouseX - (mouseX % squareSize)) / squareSize
 
     addSand([posI, posJ])
 
     drawGrid()
 
-    // loop()
 })
+
+
+loop()
