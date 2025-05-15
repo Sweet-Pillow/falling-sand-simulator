@@ -52,6 +52,8 @@ function sandFall() {
 
         if (x + 2 > rows) return
 
+        if (gridCells.get([x + 1, y]) == 1) return
+
         gridCells.set([x, y], 0)
         gridCells.set([x + 1, y], 1)
 
@@ -61,9 +63,9 @@ function sandFall() {
 
 const width = 400
 const height = 600
-const delay = 600
+const delay = 2000
 
-const squareSize = 200
+const squareSize = 20
 
 const cols = width / squareSize
 const rows = height / squareSize
