@@ -9,8 +9,8 @@ function createCanvas(width, height) {
 function createGridCells() {
     const _gridCells = new Map()
 
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
             _gridCells.set([i, j], 0)
         }
     }
@@ -24,7 +24,7 @@ function drawGrid() {
         ctx.fillStyle = value == 0 ? "white" : "black"
         ctx.strokeStyle = "black"
         ctx.fillRect(key[0] * squareSize, key[1] * squareSize, squareSize, squareSize)
-        ctx.strokeRect(key[0] * squareSize, key[1] * squareSize, squareSize, squareSize)
+        ctx.strokeRect(key[1] * squareSize, key[0] * squareSize, squareSize, squareSize)
     }
 }
 
@@ -32,28 +32,41 @@ function addSand([posI, posJ]) {
     gridCells.set([posI, posJ], 1)
 }
 
-function make2DArray(cols, rows) {
-    let arr = new Array(rows)
+function loop() {
+    sandFall()
+    drawGrid()
+    // setInterval(() => {
+    // }, delay)
+}
 
-    for (let i = 0; i < arr.length; i++) {
-        arr[i] = (new Array(cols)).fill(0)
-    }
+function sandFall() {
+    sandGrains = [...gridCells.entries()].filter(([_, value]) => value === 1)
 
-    return arr
+    if (!sandGrains) return
+
+    sandGrains.forEach(elem => {
+        const x = elem[0][1]
+        const y = elem[0][0]
+
+        // gridCells.set([x, y], 0)
+        // gridCells.set([x + 1, y], 1)
+
+    });
+
 }
 
 const width = 400
 const height = 600
+const delay = 2000
 
 const squareSize = 200
 
 const cols = width / squareSize
 const rows = height / squareSize
 
-const gridCells = createGridCells()
 const ctx = createCanvas(width, height)
 
-const arrPos = make2DArray(cols, rows)
+const gridCells = createGridCells()
 
 drawGrid()
 
@@ -68,4 +81,5 @@ ctx.canvas.addEventListener('click', (event) => {
 
     drawGrid()
 
+    // loop()
 })
