@@ -52,8 +52,6 @@ function handleClick(gameInfos) {
 
         addSand(posI, posJ, gameInfos.gridCells)
 
-        drawGrid(gameInfos)
-
     })
 }
 
@@ -61,25 +59,53 @@ function loop(gameInfos) {
 
     const interval = setInterval(() => {
 
-            const gridCellsAuxs = JSON.parse(JSON.stringify(gameInfos.gridCells))
 
-            for (let i = 0; i < gameInfos.rows - 1; i++) {
-                for (let j = 0; j < gameInfos.cols; j++) {
+        const gridCellsAuxs = JSON.parse(JSON.stringify(gameInfos.gridCells))
 
-                    //Verify if the cell has a sand
-                    if (gridCellsAuxs[i][j] != 1) {
-                        continue
-                    }
+        for (let i = 0; i < gameInfos.rows - 1; i++) {
+            for (let j = 0; j < gameInfos.cols; j++) {
 
-                    gameInfos.gridCells[i][j] = 0
-                    gameInfos.gridCells[i + 1][j] = 1
-
+                //Verify if the cell has a sand
+                if (gridCellsAuxs[i][j] != 1) {
+                    continue
                 }
+
+                //Verify if the sand is stacked
+                if (gridCellsAuxs[i + 1][j] == 1) {
+                    //Verify if the sand stack has 2 height
+                    if ((i + 2 < gameInfos.rows) && gridCellsAuxs[i + 2][j] == 1) {
+                        if (gridCellsAuxs[i + 1][j + 1] == 1 && gridCellsAuxs[i + 1][j - 1] == 0) {
+                            gameInfos.gridCells[i][j] = 0
+                            gameInfos.gridCells[i + 1][j - 1] = 1
+                            continue
+                        }
+                        if (gridCellsAuxs[i + 1][j + 1] == 0 && gridCellsAuxs[i + 1][j - 1] == 1) {
+                            gameInfos.gridCells[i][j] = 0
+                            gameInfos.gridCells[i + 1][j + 1] = 1
+                            continue
+                        }
+                        if (gridCellsAuxs[i + 1][j + 1] == 0 && gridCellsAuxs[i + 1][j - 1] == 0) {
+
+                            const direc = [-1, 1]
+                            const x = Math.floor(Math.random() * 2);
+
+                            gameInfos.gridCells[i][j] = 0
+                            gameInfos.gridCells[i + 1][j + direc[x]] = 1
+                            continue
+                        }
+                    }
+                    continue
+                }
+
+                gameInfos.gridCells[i][j] = 0
+                gameInfos.gridCells[i + 1][j] = 1
+
             }
+        }
 
-            drawGrid(gameInfos)
+        drawGrid(gameInfos)
 
-        }, gameInfos.delay)
+    }, gameInfos.delay)
 }
 
 function main() {
