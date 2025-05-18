@@ -1,103 +1,113 @@
-function createCanvas(width, height) {
+function createCanvas(gameInfos) {
     const canvas = document.getElementById("myCanvas")
-    canvas.width = width
-    canvas.height = height
+    canvas.width = gameInfos.width
+    canvas.height = gameInfos.height
 
     return canvas.getContext("2d")
 }
 
-function hashKey(key) {
-    if (Array.isArray(key)) {
-        return JSON.stringify(key)
-    }
+function createGrid(gameInfos) {
+    let _gridCells = []
 
-    return JSON.parse(key)
-}
-
-function createGridCells() {
-    const _gridCells = new Map()
-
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-            _gridCells.set(hashKey([i, j]), 0)
+    for (let i = 0; i < gameInfos.rows; i++) {
+        _gridCells[i] = [];
+        for (let j = 0; j < gameInfos.cols; j++) {
+            _gridCells[i][j] = 0
         }
     }
 
     return _gridCells
 }
 
-function drawGrid() {
+function drawGrid(gameInfos) {
+    const ctx = gameInfos.ctx
+    const rows = gameInfos.rows
+    const cols = gameInfos.cols
+    const size = gameInfos.size
 
-    for (const [key, value] of gridCells) {
-        const k = hashKey(key)
-        ctx.fillStyle = value == 0 ? "white" : "black"
-        ctx.strokeStyle = "black"
-        ctx.fillRect(k[1] * squareSize, k[0] * squareSize, squareSize, squareSize)
-        ctx.strokeRect(k[1] * squareSize, k[0] * squareSize, squareSize, squareSize)
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            ctx.fillStyle = gameInfos.gridCells[i][j] == 0 ? "white" : "black"
+            ctx.strokeStyle = "black"
+            ctx.fillRect(j * size, i * size, size, size)
+            ctx.strokeRect(j * size, i * size, size, size)
+
+        }
     }
 }
 
-function addSand([posI, posJ]) {
-    gridCells.set(hashKey([posI, posJ]), 1)
+function addSand(posI, posJ, gridCells) {
+    gridCells[posI][posJ] = 1
 }
 
-function loop() {
-    setInterval(() => {
-        sandFall()
-        drawGrid()
+function handleClick(gameInfos) {
+    const ctx = gameInfos.ctx
 
-    }, delay)
+    ctx.canvas.addEventListener('click', (event) => {
+        const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
 
+        const posI = (mouseY - (mouseY % gameInfos.size)) / gameInfos.size
+        const posJ = (mouseX - (mouseX % gameInfos.size)) / gameInfos.size
+
+        addSand(posI, posJ, gameInfos.gridCells)
+
+        drawGrid(gameInfos)
+
+        const interval = setInterval(() => {
+            const gridCellsAuxs = JSON.parse(JSON.stringify(gameInfos.gridCells))
+
+            for (let i = 0; i < gameInfos.rows - 1; i++) {
+                for (let j = 0; j < gameInfos.cols; j++) {
+
+                    if (gridCellsAuxs[i][j] != 1) {
+                        continue
+                    }
+
+                    if (gridCellsAuxs[i + 1][j] > gameInfos.rows) {
+                        continue
+                    }
+
+                    if (gridCellsAuxs[i + 1][j] == 1) {
+                        continue
+                    }
+
+                    gameInfos.gridCells[i][j] = 0
+                    gameInfos.gridCells[i + 1][j] = 1
+
+                }
+            }
+
+            drawGrid(gameInfos)
+
+        }, gameInfos.delay)
+    })
 }
 
-function sandFall() {
-    sandGrains = [...gridCells.entries()].filter(([_, value]) => value === 1)
+function main() {
+    const gameInfos = {
+        width: 400,
+        height: 600,
+        delay: 1000,
+        size: 20,
 
-    if (!sandGrains) return
+        get cols() {
+            return this.width / this.size
+        },
 
-    sandGrains.forEach(elem => {
-        const currentKeys = hashKey(elem[0])
+        get rows() {
+            return this.height / this.size
+        },
 
-        const x = currentKeys[0]
-        const y = currentKeys[1]
+    }
 
-        if (x + 2 > rows) return
+    gameInfos.ctx = createCanvas(gameInfos)
 
-        if (gridCells.get([x + 1, y]) == 1) return
+    gameInfos.gridCells = createGrid(gameInfos)
 
-        gridCells.set(hashKey([x, y]), 0)
-        gridCells.set(hashKey([x + 1, y]), 1)
+    drawGrid(gameInfos)
 
-    });
-
+    handleClick(gameInfos)
 }
 
-const width = 400
-const height = 600
-const delay = 1000
-
-const squareSize = 200
-
-const cols = width / squareSize
-const rows = height / squareSize
-
-const ctx = createCanvas(width, height)
-
-const gridCells = createGridCells()
-
-drawGrid()
-
-ctx.canvas.addEventListener('click', (event) => {
-    const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
-
-    const posI = (mouseY - (mouseY % squareSize)) / squareSize
-    const posJ = (mouseX - (mouseX % squareSize)) / squareSize
-
-    addSand([posI, posJ])
-
-    drawGrid()
-
-})
-
-loop()
+main()
