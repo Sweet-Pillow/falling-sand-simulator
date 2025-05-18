@@ -43,7 +43,7 @@ function addSand(posI, posJ, gridCells) {
 function handleClick(gameInfos) {
     const ctx = gameInfos.ctx
 
-    ctx.canvas.addEventListener('click', (event) => {
+    ctx.canvas.addEventListener('mousemove', (event) => {
         const mouseX = event.clientX - ctx.canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - ctx.canvas.getBoundingClientRect().top;
 
@@ -112,8 +112,8 @@ function main() {
     const gameInfos = {
         width: 400,
         height: 600,
-        delay: 100,
-        size: 20,
+        delay: 50,
+        size: 10,
 
         get cols() {
             return this.width / this.size
