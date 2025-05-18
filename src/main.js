@@ -54,21 +54,20 @@ function handleClick(gameInfos) {
 
         drawGrid(gameInfos)
 
-        const interval = setInterval(() => {
+    })
+}
+
+function loop(gameInfos) {
+
+    const interval = setInterval(() => {
+
             const gridCellsAuxs = JSON.parse(JSON.stringify(gameInfos.gridCells))
 
             for (let i = 0; i < gameInfos.rows - 1; i++) {
                 for (let j = 0; j < gameInfos.cols; j++) {
 
+                    //Verify if the cell has a sand
                     if (gridCellsAuxs[i][j] != 1) {
-                        continue
-                    }
-
-                    if (gridCellsAuxs[i + 1][j] > gameInfos.rows) {
-                        continue
-                    }
-
-                    if (gridCellsAuxs[i + 1][j] == 1) {
                         continue
                     }
 
@@ -81,14 +80,13 @@ function handleClick(gameInfos) {
             drawGrid(gameInfos)
 
         }, gameInfos.delay)
-    })
 }
 
 function main() {
     const gameInfos = {
         width: 400,
         height: 600,
-        delay: 1000,
+        delay: 100,
         size: 20,
 
         get cols() {
@@ -108,6 +106,8 @@ function main() {
     drawGrid(gameInfos)
 
     handleClick(gameInfos)
+
+    loop(gameInfos)
 }
 
 main()
